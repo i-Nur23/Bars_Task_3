@@ -36,33 +36,49 @@ internal class Program
 
     static void Writer(string message, string[] args)
     {
-        var result = new DummyRequestHandler().HandleRequest(message,args);
-        Console.WriteLine($"Сообщение с идентификатром {Guid.NewGuid().ToString("D")} {result}");
+        var identificator = Guid.NewGuid().ToString("D");
+
+        try
+        {
+            var result = new DummyRequestHandler().HandleRequest(message, args);
+            Console.WriteLine($"Сообщение с идентификатром {identificator} получило ответ: {result}");
+        }
+        catch (Exception ex)
+        {
+            Console.WriteLine($"Сообщение с идентификатром {identificator} упало с ошибкой: {ex.Message}");
+        }
     }
 }
 
+/// <summary>
+/// Предоставляет возможность обработать запрос.
+/// </summary>
 public interface IRequestHandler
 {
+    /// <summary>
+    /// Обработать запрос.
+    /// </summary>
+    /// <param name="message">Сообщение.</param>
+    /// <param name="arguments">Аргументы запроса.</param>
+    /// <returns>Результат выполнения запроса.</returns>
     string HandleRequest(string message, string[] arguments);
 }
 
+
+/// <summary>
+/// Тестовый обработчик запросов.
+/// </summary>
 public class DummyRequestHandler : IRequestHandler
 {
+    /// <inheritdoc />
     public string HandleRequest(string message, string[] arguments)
     {
         // Притворяемся, что делаем что то.
         Thread.Sleep(10_000);
-        try
+        if (message.Contains("упади"))
         {
-            if (message.Contains("упади"))
-            {
-                throw new Exception("Я упал, как сам просил");
-            }
-            return String.Concat("получил ответ: ",Guid.NewGuid().ToString("D"));
+            throw new Exception("Я упал, как сам просил");
         }
-        catch (Exception ex)
-        {
-            return String.Concat("упал с ошибкой: ", ex.Message);
-        }
+        return Guid.NewGuid().ToString("D");
     }
 }
