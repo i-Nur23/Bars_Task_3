@@ -17,16 +17,14 @@ internal class Program
             var stringArg = Console.ReadLine();
             while (stringArg != "/void")
             {
-                Array.Resize(ref args, i+1);
+                Array.Resize(ref args, i + 1);
                 args[i] = stringArg;
                 Console.WriteLine("Введите следующий аргумент. /void - больше аргументов нет");
                 stringArg = Console.ReadLine();
                 i++;
             }
-            
-            Thread write = new Thread((() => Writer(command,args)));
-            write.IsBackground = true;
-            write.Start();
+
+            ThreadPool.QueueUserWorkItem(callBack => Writer(command, args));
             
             Console.WriteLine("Введите текст запроса. Для выхода введите /q.");
             command = Console.ReadLine();
